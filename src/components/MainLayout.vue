@@ -1,11 +1,11 @@
 <template>
   <div class="left-con">
-    <h3>{{appinfo.appname}}</h3>
-    <h5>Version:  {{appinfo.version}}</h5>
+    <h3>{{appInfo.modelname}}</h3>
+    <!--<h5>Version:  {{appinfo.version}}</h5>-->
     <hr class="spacer-32-bottom">
     <ul class="path-items">
-      <li class="path-li" v-for="item in pathList">
-        <a :href="item.url" :class="{'active':item.active}">{{item.text}}</a>
+      <li class="path-li" v-for="item in pathList" @click="handleLink(item)">
+        <router-link :class="{'active':item.active}" :to="item.url" tag="a">{{item.text}}</router-link>
       </li>
     </ul>
   </div>
@@ -15,11 +15,13 @@
 export default {
   name: 'MainLayout',
   props: {
-    appinfo: {
+    appInfo: {
       type: Object,
-      default: {
-        appname: '默认appname',
-        version: '默认版本0.1',
+      default () {
+        return {
+          modelname: '默认appname',
+          version: '默认版本0.1'
+        }
       }
     }
   },
@@ -30,17 +32,17 @@ export default {
       pathList: [
         {
           url: '/overview',
-          text: 'Intents',
+          text: '意图',
           active: false,
         },
         {
-          url: '',
-          text: 'Entities',
+          url: '/entities',
+          text: '实体',
           active: false,
         },
         {
           url: '/trainTest',
-          text: 'Train & Test',
+          text: '训练和测试',
           active: false,
         }
       ]
@@ -50,10 +52,18 @@ export default {
     let pathname = location.pathname
     for (let i in this.pathList) {
       let node = this.pathList[i]
-      if (node.url == pathname) {
+      if (pathname.indexOf(node.url) > -1) {
         node.active = true
       } else {
         node.active = false
+      }
+    }
+  },
+  methods: {
+    handleLink (item) {
+      let pathname = location.pathname
+      if (pathname.indexOf('/overview')) {
+        this.$emit('handleLink')
       }
     }
   }

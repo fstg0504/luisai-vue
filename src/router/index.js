@@ -8,6 +8,7 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
+  base: '/ssm/', // 服务器的虚拟目录
   routes: [
     {
       path: '/',

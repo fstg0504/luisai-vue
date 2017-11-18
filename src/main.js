@@ -3,12 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-
+import axios from 'axios'
 import $ from 'jquery'
 import './assets/bootstrap-3.3.5-dist/js/bootstrap.min.js'
 import './assets/bootstrap-3.3.5-dist/css/bootstrap.min.css'
 import './assets/font-awesome-4.7.0/css/font-awesome.min.css'
 import './assets/css/base.less'
+
+axios.defaults.baseURL = 'http://192.168.13.13:8080/ssm/model'
+Vue.prototype.$http = axios
 
 window.$ = $
 Vue.config.productionTip = false

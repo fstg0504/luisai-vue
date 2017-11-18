@@ -124,14 +124,14 @@ export default {
       this.resultsShow = false
       let addobj = {
         id: this.chatList.length + 1,
-        quiz: this.inputChat,
+        quiz: this.inputChat
       }
       this.chatList.unshift(addobj)
       this.inputChat = ''
-      setTimeout(function () {
+      setTimeout(() => {
         this.resultsLoading = false
         this.resultsShow = true
-      }.bind(this),1000)
+      }, 1000)
     }
   },
   watch: {

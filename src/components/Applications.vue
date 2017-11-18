@@ -2,12 +2,12 @@
   <div class="main w90" id="main">
     <div class="row">
       <div class="col-lg-12">
-        <h1 class="">My apps</h1>
-        <p>Create and manage your LUIS applications ...
-          <a>Learn more</a>
+        <h1 class="">我的应用</h1>
+        <p>创建和管理您的路易斯应用程序。
+          <a>更多</a>
         </p>
         <div class="btn-group">
-          <button class="btn newbtn" data-toggle="modal" data-target="#addAPPModal">New App</button>
+          <button class="btn newbtn" data-toggle="modal" data-target="#addAPPModal">创建模型</button>
         </div>
       </div>
     </div>
@@ -15,16 +15,18 @@
       <table class="table table-striped">
         <thead>
         <tr>
-          <th>Name</th>
-          <th>Created date</th>
-          <th>Description</th>
+          <th>应用名称</th>
+          <th>创建时间</th>
+          <th>描述</th>
         </tr>
         </thead>
         <tbody>
         <tr v-cloak v-for="(item,index) in applist" :key="index">
-          <td ><a :href="'/overview?appid='+item.id">{{ item.name }}</a></td>
-          <td >{{ item.createdDate }}</td>
-          <td >{{ item.description }}</td>
+          <td>
+            <router-link @click.native="setSessionStorage(item)" :class="{'active':item.active}" :to="{path:'/overview',query: {id: item.id}}" tag="a">{{item.modelname}}</router-link>
+          </td>
+          <td >{{ item.createtime }}</td>
+          <td >{{ item.descrbe }}</td>
           <!--<td class="handle-td">
               <a class="handle-a"><i class="fa fa-pencil" aria-hidden="true"></i></a>
               <a class="handle-a"><i class="fa fa-cloud-download" aria-hidden="true"></i></a>
@@ -39,22 +41,22 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">Create a new app</h4>
+              <h4 class="modal-title">创建一个新的应用程序</h4>
             </div>
             <div class="modal-body">
               <form>
                 <div class="form-group">
-                  <label for="exampleInputEmail1">Name (REQUIRED)</label>
-                  <input v-model="addappName" type="text" class="form-control" id="appName" placeholder="APP名称">
+                  <label for="addmodelName">名称 (必需)</label>
+                  <input v-model="addmodelName" type="text" class="form-control" id="addmodelName" placeholder="APP名称">
                 </div>
                 <div class="form-group">
-                  <label for="exampleInputPassword1">描述</label>
-                  <textarea v-model="addappDescription" class="form-control" id="appDescription" placeholder="APP描述"></textarea>
+                  <label for="appDescrbe">描述</label>
+                  <textarea v-model="descrbe" class="form-control" id="appDescrbe" placeholder="APP描述"></textarea>
                 </div>
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
               <button type="button" class="btn btn-primary" @click="add()">保存</button>
             </div>
           </div>
@@ -66,52 +68,48 @@
 
 <script>
 import $ from 'jquery'
+import Qs from 'qs'
 
-let testDate = [
-  {
-    id: '1',
-    name: 'appname1',
-    culture: 'aaa',
-    createdDate: 'Nov 9, 2017, 11:51:29 AM',
-    description: '描述',
-    controls: 'aaa'
-  },
-  {
-    id: '2',
-    name: 'appname2',
-    culture: 'aaa',
-    createdDate: 'Nov 9, 2017, 11:51:29 AM',
-    description: '描述',
-    controls: 'aa'
-  },
-  {
-    id: '3',
-    name: 'appname3',
-    culture: 'aaa',
-    createdDate: 'Nov 9, 2017, 11:51:29 AM',
-    description: '描述',
-    controls: 'aaa'
-  }
-]
 export default {
   name: 'Applications',
   data () {
     return {
       applist: [],
-      addappName: '',
-      addappDescription: ''
+      addmodelName: '',
+      descrbe: ''
     }
   },
   created () {
-    this.applist = testDate
+    // 方法1 apply或者call
+    //  方法2 this.$options.methods.findAllModel(this)
+    this.$options.methods.findAllModel.bind(this)()
   },
   methods: {
     add () {
-      $('#addAPPModal').modal('hide')
-//      let addobj = {
-//        appName: this.addappName,
-//        addappDescription: this.addappDescription
-//      }
+      let addobj = {
+        modelName: this.addmodelName,
+        descrbe: this.descrbe
+      }
+      this.$http({
+        method: 'POST',
+        url: '/insertModel',
+        data: Qs.stringify(addobj)
+      }).then(response => {
+        this.$options.methods.findAllModel.bind(this)()
+        $('#addAPPModal').modal('hide')
+      }, response => {
+        console.log('失败：' + response)
+      })
+    },
+    findAllModel () {
+      this.$http.get('/findAllModel').then(response => {
+        this.applist = response.data
+      }, response => {
+        console.log('失败：' + response)
+      })
+    },
+    setSessionStorage (item) {
+      sessionStorage.setItem('appInfo', JSON.stringify(item))
     }
   }
 }

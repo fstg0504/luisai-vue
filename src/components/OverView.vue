@@ -2,30 +2,30 @@
   <div class="main w90" id="main">
     <div class="row">
       <div class="col-lg-2">
-        <main-layout :appinfo="appinfo"></main-layout>
+        <main-layout v-on:handleLink="EmitsetIntentsListShow" :appInfo="appInfo"></main-layout>
       </div>
       <div class="col-lg-10">
         <div class="right-con">
           <template v-if="intentListShow">
-            <h2>Intents</h2>
-            <p>A listing of intents in the application. Click an intent to view/edit its details, or add a new intent ... <a >Learn more</a></p>
+            <h2>意图</h2>
+            <p>在应用程序中列出意图。点击意图查看/编辑它的详细信息，或者添加一个新的意图。<a >更多（无效）</a></p>
             <div class="btn-con">
-              <button class="btn addIntent" data-toggle="modal" data-target="#addIntentModal">Add Intent</button>
-              <button class="btn addPrebuilt">Add prebuilt domain intents</button>
+              <button class="btn addIntent" data-toggle="modal" data-target="#addIntentModal">添加意图</button>
+              <button class="btn addPrebuilt">添加预构建域意图（无效）</button>
             </div>
             <div class="intents-list-con">
               <table class="table table-striped">
                 <thead>
                 <tr>
-                  <th>Intent Name</th>
-                  <th>Utterances</th>
+                  <th>意图名称</th>
+                  <th>话语</th>
                   <th>删除修改</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-cloak v-for="(item,index) in intentList" :key="index">
-                  <td ><a :id="item.id" @click="utterancesListShow(item)">{{ item.name }}</a></td>
-                  <td >{{ item.utterances }}</td>
+                  <td ><a :id="item.id" @click="utterancesListShow(item)">{{ item.tagname }}</a></td>
+                  <td >暂无</td>
                   <td class="handle-td">
                     <a class="handle-a"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                     <a class="handle-a"><i class="fa fa-trash" aria-hidden="true"></i></a>
@@ -33,51 +33,51 @@
                 </tr>
                 </tbody>
               </table>
-              <div class="modal fade" id="addIntentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title">Add Intent</h4>
+            </div>
+            <div class="modal fade" id="addIntentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">添加意图</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="intentName">意图名称(必需)</label>
+                      <input v-model="intentName" type="text" class="form-control" id="intentName" placeholder="输入意图名称">
                     </div>
-                    <div class="modal-body">
-                      <div class="form-group">
-                        <label for="intentName">Intent name (REQUIRED)</label>
-                        <input v-model="intentName" type="text" class="form-control" id="intentName" placeholder="Type intent name ...">
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary" @click="add()">保存</button>
-                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="addTagName()">保存</button>
                   </div>
                 </div>
               </div>
             </div>
           </template>
           <template v-else>
-            <h2>{{intentNameNow}}</h2>
-            <p>Here you are in full control of this intent; you can manage its utterances, used entities and suggested utterances ...<a >Learn more</a></p>
+            <h2><span class="">当前意图标签:</span>{{intentNameNow}}</h2>
+            <p>在这里你完全控制了这个意图;你可以管理它的话语，使用的实体和建议的话语。<a >更多（无效）</a></p>
             <div class="utterances-list-con">
               <div class="row">
                 <ul class="nav-tabs">
-                  <li class="active"><span class="">Utterances</span><span class="num">(1)</span></li>
-                  <li class=""><span class="">Entities in use</span></li>
-                  <li class=""><span class="">Suggested utterances</span></li>
+                  <li class="active"><span class="">话语</span><span class="num">(1)</span></li>
+                  <li class=""><span class="">实体在使用</span></li>
+                  <li class=""><span class="">建议话语</span></li>
                 </ul>
                 <div class="form-group">
                   <input v-model="newUtterance" @keydown="addUtterance($event)" type="text" class="form-control" id="newUtterance" placeholder="输入一个新的话语和按下回车。">
                 </div>
                 <div class="row tools-header">
                   <ul class="tools-list-ul">
-                    <li class="Save" :class="{'disabled':utterancesLiDisabled1}"><a><i  class="fa fa-floppy-o"></i><span >Save</span></a></li>
+                    <li class="Save" :class="{'disabled':utterancesLiDisabled1}"><a><i  class="fa fa-floppy-o"></i><span >保存</span></a></li>
                     <li class="Discard" :class="{'disabled':utterancesLiDisabled1}"><a><i  class="fa fa-times"></i><span >Discard</span></a></li>
-                    <li class="Delete"  :class="{'disabled':utterancesLiDisabled2}"><a><i  class="fa fa-trash"></i><span >Delete</span></a></li>
+                    <li class="Delete"  :class="{'disabled':utterancesLiDisabled2}"><a><i  class="fa fa-trash"></i><span >删除</span></a></li>
                     <li class="reassign-li" :class="{'disabled':utterancesLiDisabled2}">
                       <a @click="reassign_ul=!reassign_ul"><span>Reassign Intent</span><i class="fa fa-arrow-down" aria-hidden="true"></i></a>
                       <ul class="select-ul" v-if="reassign_ul">
-                        <li v-for="(item,index) in reassignList" @click="reassignModuleShow(item)" :id="item.id" :key="index">
-                          <span>{{item.name}}</span><span>{{'('+item.precision+')'}}</span>
+                        <li v-for="(item,index) in intentList" @click="reassignModuleShow(item)" :id="item.id" :key="index">
+                          <span>{{item.tagname}}</span><span></span>
                         </li>
                       </ul>
                     </li>
@@ -92,11 +92,11 @@
                   </div>
                   <div class="utterances-item clearfix" v-for="(item,index) in utterancesList" :key="index">
                     <div class="item-d checkbox pull-left">
-                      <label><input type="checkbox" :value="item.id" v-model="utterancesListCheckList[index]" @click="selectItem(item.id)">{{item.utterance}}</label>
+                      <label><input type="checkbox" :value="item.id" v-model="utterancesListCheckList[index]" @click="selectItem(item)">{{item.intentname}}</label>
                     </div>
                     <div class="item-d pull-right">
-                      <div class="precision">{{item.precision}}</div>
-                      <div class="intentName">{{item.intentName}}</div>
+                      <div class="precision">0.81</div>
+                      <div class="intentName">未知</div>
                     </div>
                   </div>
                 </div>
@@ -107,13 +107,13 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Reassign utterance(s)?</h4>
+                    <h4 class="modal-title">重新分配话语?</h4>
                   </div>
                   <div class="modal-body">
-                    <p>Are you sure you want to reassign <span class="warn">1</span> utterance(s) to the <span class="warn">{{reassignItem.name}}</span> intent?</p>
+                    <p>确定重新分配 <span class="warn">{{reassignNum}}</span> 个话语到<span class="warn">{{reassignItem.tagname}}</span> 意图?</p>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-primary" @click="reassignUtterances(reassignItem.id)">保存</button>
                   </div>
                 </div>
@@ -128,66 +128,19 @@
 
 <script>
 import $ from 'jquery'
+import Qs from 'qs'
 import MainLayout from '@/components/MainLayout'
 
-let intentList = [
-  {
-    id:'1',
-    name:'问候语',
-    utterances:'对答问候语模型',
-    precision:0.01,
-  },
-  {
-    id:'2',
-    name:'查询天气',
-    utterances:'对答问题查询天气',
-    precision:0.01,
-  },
-  {
-    id:'3',
-    name:'寻找歌单',
-    utterances:'查找歌曲作者',
-    precision:0.01,
-  }
-]
-let utterancesList = [
-  {
-    id: '1',
-    utterance: 'hello world',
-    intentName: '问候语',
-    precision: '0.8',
-  },
-  {
-    id: '2',
-    utterance: '吃饭了吗',
-    intentName: '问候语',
-    precision: '0.8',
-  },
-  {
-    id: '3',
-    utterance: '周末打算去哪里玩',
-    intentName: '问候语',
-    precision: '0.2',
-  },
-  {
-    id: '4',
-    utterance: '小明是谁',
-    intentName: '问候语',
-    precision: '0.1',
-  },
-
-]
 export default {
-  name:  'OverView',
+  name: 'OverView',
   data () {
     return {
-      appinfo: {
-        appname: 'OverView-appname',
-        version: 'OverView-version',
-      },
+      moduleId: '',
+      appInfo: {},
       intentList: [],
       intentListShow: true,
       intentNameNow: '',
+      intentsNow: {},
       utterancesList: [],
       utterancesListCheckList: [],
       utterancesListCheckAll: false,
@@ -197,7 +150,7 @@ export default {
       utterancesLiDisabled2: true,
       reassignList: [],
       reassignItem: {},
-      reassignNum: '',
+      reassignNum: 0,
       reassignName: '',
       reassign_ul: false
     }
@@ -206,19 +159,27 @@ export default {
     'main-layout': MainLayout
   },
   created () {
-    this.intentList = intentList
-    this.utterancesList = utterancesList
-    this.reassignList = intentList
+    let appInfo = JSON.parse(sessionStorage.getItem('appInfo'))
+    this.appInfo = appInfo
+    this.moduleId = appInfo.id
+    this.$options.methods.getModeltagById.bind(this)(this.moduleId)
   },
   methods: {
-    add () {
+    addTagName () {
       let addobj = {
-        name: this.intentName,
-        id: this.intentList.length + 1,
-        utterances: '本地添加测试'
+        tagName: this.intentName,
+        modelId: this.moduleId
       }
-      this.intentList.push(addobj)
-      $('#addIntentModal').modal('hide')
+      this.$http.post('/insertTag', Qs.stringify(addobj)).then(response => {
+        if (response.data == 1) {
+          $('#addIntentModal').modal('hide')
+          this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+        }
+      }, response => {
+        $('#addIntentModal').modal('hide')
+        console.log('失败：' + response)
+      })
+      this.intentName = ''
     },
     switcCheckListAll () {
       this.utterancesListCheckAll = !this.utterancesListCheckAll
@@ -229,28 +190,45 @@ export default {
         this.reassign_ul = false
       }
       for (let i in this.utterancesListCheckList) {
-        this.utterancesListCheckList[i] = this.utterancesListCheckAll
+        this.$set(this.utterancesListCheckList, i, this.utterancesListCheckAll)
       }
     },
-    selectItem (id) {
+    selectItem (item) {
     },
-    selectAll () {
+    EmitsetIntentsListShow () {
+      console.log('mainlayoput,/overview点击了....')
+      this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+      this.intentListShow = true
+      this.reassign_ul = false
+      this.utterancesLiDisabled2 = true
+      console.log(this)
     },
     utterancesListShow (item) {
-      this.intentNameNow = item.name
+      this.intentNameNow = item.tagname
+      this.intentsNow = item
       this.intentListShow = false
+      this.$options.methods.getTagintentById.bind(this)(item)
     },
     addUtterance (event) {
-      if (event.keyCode == "13") {
-        let addobj = {
-          id: (this.utterancesList.length) + 1,
-          intentName: this.intentNameNow,
-          precision: 0.01,
-          utterance: this.newUtterance,
-          newItem: true
+      if (event.keyCode == '13') {
+        if (!this.newUtterance || (this.newUtterance == undefined)) {
+          alert('请输入话语')
+          return false
         }
-        this.utterancesList.unshift(addobj)
-        this.newUtterance = ''
+        let addobj = {
+          tagId: this.intentsNow.id,
+          intentname: this.newUtterance
+        }
+        this.$http.post('/insertIntent', Qs.stringify(addobj)).then(response => {
+          if (response.data == 1) {
+            addobj.newItem = true
+            this.newUtterance = ''
+            this.$options.methods.getTagintentById.bind(this)(this.intentsNow)
+          }
+        }, response => {
+          $('#addIntentModal').modal('hide')
+          console.log('失败：' + response)
+        })
       }
     },
     reassignModuleShow (item) {
@@ -258,8 +236,47 @@ export default {
       this.reassignItem = item
     },
     reassignUtterances () {
-      alert('reassignUtterancesModal保存成功')
-      $('#reassignUtterancesModal').modal('hide')
+      let idArr = []
+      for (let i in this.utterancesListCheckList) {
+        let node = this.utterancesListCheckList[i]
+        if (node) {
+          idArr.push(this.utterancesList[i].id)
+        }
+      }
+      if (idArr.length == 0) {
+        alert('请选择要重新分配的话语')
+        return false
+      }
+      let opt = {
+        id: idArr.join(','),
+        tagId: this.reassignItem.id
+      }
+      this.$http.post('/updateIntentTag', Qs.stringify(opt)).then(response => {
+        alert('reassignUtterancesModal保存成功')
+        $('#reassignUtterancesModal').modal('hide')
+        this.reassign_ul = false
+        this.$options.methods.getTagintentById.bind(this)(this.intentsNow)
+      }, response => {
+        this.reassign_ul = false
+        $('#reassignUtterancesModal').modal('hide')
+        console.log('失败：' + response)
+      })
+    },
+    getModeltagById (moduleId) {
+      this.$http.get('/modeltag?id=' + moduleId).then(response => {
+        this.intentList = response.data
+      }, response => {
+        console.log('获取信息失败,response:' + response)
+      })
+    },
+    getTagintentById (item) {
+      this.$http.get('/tagintent?id=' + item.id).then(response => {
+        if (response.data) {
+          this.utterancesList = response.data
+        }
+      }, response => {
+        console.log('失败：' + response)
+      })
     }
   },
   watch: {
@@ -273,32 +290,40 @@ export default {
           this.utterancesListCheckList.push(false)
         }
       }
-      this.utterancesLiDisabled2 = false
+      this.utterancesLiDisabled2 = true
     },
     utterancesListCheckList: function () {
+      console.log(this.utterancesListCheckList)
       if (this.utterancesListCheckList.includes(true) && this.utterancesListCheckList.includes(false)) {
         // 混合值
         this.utterancesLiDisabled2 = false
         this.utterancesListCheckAll = false
+        let countedNames = this.utterancesListCheckList.reduce(function (allNames, name) {
+          if (name in allNames) {
+            allNames[name]++
+          } else {
+            allNames[name] = 1
+          }
+          return allNames
+        }, {})
+        this.reassignNum = countedNames['true']
       } else { // 单一值
         if (this.utterancesListCheckList.includes(true) && (!this.utterancesListCheckList.includes(false))) {
           // 全选
           this.utterancesLiDisabled2 = false
+          this.reassignNum = this.utterancesListCheckList.length
         }
         if (this.utterancesListCheckList.includes(false) && (!this.utterancesListCheckList.includes(true))) {
           // 全不选
           this.utterancesLiDisabled2 = true
           this.reassign_ul = false
           this.utterancesListCheckAll = false
+          this.reassignNum = 0
         }
       }
     }
   }
 }
-
-// $('.path-items .intents').on('click',function () {
-//   VMmain.intentListShow = true
-// })
 </script>
 
 <style lang="less" scoped>

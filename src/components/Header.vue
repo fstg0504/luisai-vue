@@ -1,18 +1,18 @@
 <template>
   <header class="">
-    <div class="panel">
-      <div class="panel-body">
-        <a class="">link11</a>
-        <a class="">link22</a>
-        <a class="">link33</a>
-      </div>
-    </div>
+    <!--<div class="panel">-->
+      <!--<div class="panel-body">-->
+        <!--<a class="">link11</a>-->
+        <!--<a class="">link22</a>-->
+        <!--<a class="">link33</a>-->
+      <!--</div>-->
+    <!--</div>-->
     <div class="nav header-nav">
       <div class="nav-item">
         <ul>
-          <li class="active"><a href="/">My apps</a></li>
-          <li><a href="">Docs</a></li>
-          <li><a href="">link3</a></li>
+          <li class="active"><a href="/applications">我的应用</a></li>
+          <li><a href="">文档</a></li>
+          <li><a href="">其他</a></li>
         </ul>
       </div>
     </div>
