@@ -12,22 +12,23 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Applications',
+      redirect: '/applications',
+      name: '/',
       component: Applications
     },
     {
       path: '/applications',
-      name: 'Applications',
+      name: '模型列表',
       component: Applications
     },
     {
       path: '/overview',
-      name: 'Overview',
+      name: '意图列表',
       component: OverView
     },
     {
       path: '/trainTest',
-      name: 'TrainTest',
+      name: '培训测试',
       component: TrainTest
     },
   ]

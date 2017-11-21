@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-12">
         <h1 class="">我的应用</h1>
-        <p>创建和管理您的路易斯应用程序。
+        <p>创建和管理您的luis应用程序。
           <a>更多</a>
         </p>
         <div class="btn-group">
@@ -23,7 +23,7 @@
         <tbody>
         <tr v-cloak v-for="(item,index) in applist" :key="index">
           <td>
-            <router-link @click.native="setSessionStorage(item)" :class="{'active':item.active}" :to="{path:'/overview',query: {id: item.id}}" tag="a">{{item.modelname}}</router-link>
+            <router-link @click.native="setSessionStorage(item)" :class="{'active':item.active}" :to="{path:'/overview'}" tag="a">{{item.modelname}}</router-link>
           </td>
           <td >{{ item.createtime }}</td>
           <td >{{ item.descrbe }}</td>
@@ -68,7 +68,6 @@
 
 <script>
 import $ from 'jquery'
-import Qs from 'qs'
 
 export default {
   name: 'Applications',
@@ -86,6 +85,10 @@ export default {
   },
   methods: {
     add () {
+      if (!this.addmodelName) {
+        alert('应用名称不能为空')
+        return false
+      }
       let addobj = {
         modelName: this.addmodelName,
         descrbe: this.descrbe
@@ -93,7 +96,7 @@ export default {
       this.$http({
         method: 'POST',
         url: '/insertModel',
-        data: Qs.stringify(addobj)
+        data: addobj
       }).then(response => {
         this.$options.methods.findAllModel.bind(this)()
         $('#addAPPModal').modal('hide')

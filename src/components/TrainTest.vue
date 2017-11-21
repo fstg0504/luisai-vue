@@ -2,26 +2,26 @@
   <div class="main w90" id="main">
     <div class="row" id="main-layout">
       <div class="col-lg-2">
-        <main-layout ></main-layout>
+        <main-layout  :appInfo="appInfo"></main-layout>
       </div>
       <div class="col-lg-10">
         <div class="right-con">
-          <h2>Test your application</h2>
-          <p>Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ... <a >Learn more</a></p>
+          <h2>测试应用程序</h2>
+          <p>使用这个工具来测试您的应用程序的当前和发布版本，以检查您是否在正确的轨道上前进。<a >了解更多</a></p>
           <div class="train-list-con">
             <div class="row">
               <ul class="nav-tabs">
-                <li class="active"><span class="">Interactive Testing</span></li>
-                <li class=""><span class="">Batch Testing</span></li>
+                <li class="active"><span class="">交互式测试</span></li>
+                <li class=""><span class="">批量测试（无效）</span></li>
               </ul>
             </div>
             <div class="row filter-con clearfix">
               <div class="form-group checkbox pull-left">
-                <label><input type="checkbox" class="form-control" disabled>Enable published model</label>
+                <label><input type="checkbox" class="form-control" disabled>使出版模式</label>
               </div>
               <div class="form-group pull-right">
                 <label>
-                  <span class=".form-control-static">Labels view (Ctrl+E)</span>
+                  <span class=".form-control-static">标签视图</span>
                   <select class="">
                     <option>111111</option>
                     <option>111111</option>
@@ -51,13 +51,13 @@
                       </div>
                     </template>
                     <template v-if="resultsShow">
-                      <h4 class="">Current version results</h4>
+                      <h4 class="">当前版本的结果</h4>
                       <div class="main-intent">
-                        <h5 class="">Top scoring intent</h5>
+                        <h5 class="">得分最高的意图</h5>
                         <h4><span class="intent-name">None </span><span >(0.73)</span></h4>
                       </div>
                       <div class="">
-                        <h5 class="win-color-fg-secondary">Other intents</h5>
+                        <h5 class="win-color-fg-secondary">其他的意图</h5>
                         <ul class="other-intent-list">
                           <li >询问火车票 (0)</li><li >寻找歌单 (0)</li>
                         </ul>
@@ -79,27 +79,11 @@
 import $ from 'jquery'
 import MainLayout from '@/components/MainLayout'
 
-let chatList = [
-  {
-    id: '1',
-    quiz: '提问1',
-    answer: '回答1',
-  },
-  {
-    id: '1',
-    quiz: '提问1',
-    answer: '回答1',
-  },
-  {
-    id: '1',
-    quiz: '提问1',
-    answer: '回答1',
-  },
-]
 export default {
   name: 'TrainTest',
   data () {
     return {
+      appInfo: {},
       chatList: [],
       inputChat: '',
       resultsShow: false,
@@ -108,7 +92,9 @@ export default {
     }
   },
   created: function () {
-    // this.chatList = chatList
+    let appInfo = JSON.parse(sessionStorage.getItem('appInfo'))
+    this.appInfo = appInfo
+    this.moduleId = appInfo.id
   },
   mounted: function () {
   },

@@ -11,6 +11,14 @@ import './assets/font-awesome-4.7.0/css/font-awesome.min.css'
 import './assets/css/base.less'
 
 axios.defaults.baseURL = 'http://192.168.13.13:8080/ssm/model'
+axios.defaults.transformRequest = [function (data) {
+  // Do whatever you want to transform the data
+  let ret = ''
+  for (let it in data) {
+    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+  }
+  return ret
+}]
 Vue.prototype.$http = axios
 
 window.$ = $

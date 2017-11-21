@@ -33,17 +33,17 @@ export default {
         {
           url: '/overview',
           text: '意图',
-          active: false,
+          active: false
         },
         {
           url: '/entities',
           text: '实体',
-          active: false,
+          active: false
         },
         {
           url: '/trainTest',
           text: '训练和测试',
-          active: false,
+          active: false
         }
       ]
     }

@@ -27,8 +27,8 @@
                   <td ><a :id="item.id" @click="utterancesListShow(item)">{{ item.tagname }}</a></td>
                   <td >暂无</td>
                   <td class="handle-td">
-                    <a class="handle-a"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                    <a class="handle-a"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    <a class="handle-a" @click="updateTagHandle(item)" data-toggle="modal" data-target="#updataIntentModal"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                    <a class="handle-a" @click="delTagName(item)"><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </td>
                 </tr>
                 </tbody>
@@ -54,9 +54,29 @@
                 </div>
               </div>
             </div>
+            <div class="modal fade" id="updataIntentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">修改意图</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="intentName">意图名称(必需)</label>
+                      <input v-model="intentName" type="text" class="form-control" id="intentName-updata" placeholder="输入意图名称">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="updateTag()">保存</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </template>
           <template v-else>
-            <h2><span class="">当前意图标签:</span>{{intentNameNow}}</h2>
+            <h2><span class="intent-span">当前意图标签:</span>{{intentNameNow}}</h2>
             <p>在这里你完全控制了这个意图;你可以管理它的话语，使用的实体和建议的话语。<a >更多（无效）</a></p>
             <div class="utterances-list-con">
               <div class="row">
@@ -128,7 +148,6 @@
 
 <script>
 import $ from 'jquery'
-import Qs from 'qs'
 import MainLayout from '@/components/MainLayout'
 
 export default {
@@ -160,26 +179,75 @@ export default {
   },
   created () {
     let appInfo = JSON.parse(sessionStorage.getItem('appInfo'))
-    this.appInfo = appInfo
-    this.moduleId = appInfo.id
-    this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+    if (appInfo) {
+      this.appInfo = appInfo
+      this.moduleId = appInfo.id
+//      this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+      this.getModeltagById(this.moduleId)
+    } else {
+      this.$router.push({
+        path: '/applications'
+      })
+    }
   },
   methods: {
     addTagName () {
+      if (!this.intentName) {
+        alert('意图名称不能为空')
+        return false
+      }
       let addobj = {
         tagName: this.intentName,
         modelId: this.moduleId
       }
-      this.$http.post('/insertTag', Qs.stringify(addobj)).then(response => {
+      this.$http.post('/insertTag', addobj).then(response => {
         if (response.data == 1) {
           $('#addIntentModal').modal('hide')
-          this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+//          this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+          this.getModeltagById(this.moduleId)
         }
       }, response => {
         $('#addIntentModal').modal('hide')
         console.log('失败：' + response)
       })
       this.intentName = ''
+    },
+    delTagName (item) {
+      let opt = {
+        id: item.id
+      }
+      let result = confirm('确定删除这个意图标签？')
+      if (result) {
+        this.$http.post('/delTag', opt).then(response => {
+          if (response.data.result == 1) {
+            this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+          }
+        }, response => {
+          $('#addIntentModal').modal('hide')
+          console.log('失败：' + response)
+        })
+      } else {
+        return false
+      }
+    },
+    updateTagHandle (item) {
+      this.intentsNow = item
+      this.intentName = item.tagname
+    },
+    updateTag () {
+      let opt = {
+        tagName: this.intentName,
+        tagId: this.intentsNow.id
+      }
+      this.$http.post('/updateTag', opt).then(response => {
+        if (response.data.result == 1) {
+          $('#updataIntentModal').modal('hide')
+          this.$options.methods.getModeltagById.bind(this)(this.moduleId)
+        }
+      }, response => {
+        alert.log('失败：' + response)
+        $('#updataIntentModal').modal('hide')
+      })
     },
     switcCheckListAll () {
       this.utterancesListCheckAll = !this.utterancesListCheckAll
@@ -219,7 +287,7 @@ export default {
           tagId: this.intentsNow.id,
           intentname: this.newUtterance
         }
-        this.$http.post('/insertIntent', Qs.stringify(addobj)).then(response => {
+        this.$http.post('/insertIntent', addobj).then(response => {
           if (response.data == 1) {
             addobj.newItem = true
             this.newUtterance = ''
@@ -251,7 +319,7 @@ export default {
         id: idArr.join(','),
         tagId: this.reassignItem.id
       }
-      this.$http.post('/updateIntentTag', Qs.stringify(opt)).then(response => {
+      this.$http.post('/updateIntentTag', opt).then(response => {
         alert('reassignUtterancesModal保存成功')
         $('#reassignUtterancesModal').modal('hide')
         this.reassign_ul = false
@@ -350,6 +418,11 @@ export default {
   }
   .right-con{
     width: 90%;margin: 0 auto 0 0;
+    h2{
+      .intent-span{
+        font-size: 14px;
+      }
+    }
     .row{
       padding: 0; margin: 0;
     }
