@@ -10,7 +10,7 @@ import './assets/bootstrap-3.3.5-dist/css/bootstrap.min.css'
 import './assets/font-awesome-4.7.0/css/font-awesome.min.css'
 import './assets/css/base.less'
 
-axios.defaults.baseURL = 'http://192.168.13.13:8080/ssm/model'
+// axios.defaults.baseURL = 'http://192.168.13.13:8080/ssm/model'
 axios.defaults.transformRequest = [function (data) {
   // Do whatever you want to transform the data
   let ret = ''
@@ -20,6 +20,7 @@ axios.defaults.transformRequest = [function (data) {
   return ret
 }]
 Vue.prototype.$http = axios
+Vue.prototype.HOST = '/api'
 
 window.$ = $
 Vue.config.productionTip = false
