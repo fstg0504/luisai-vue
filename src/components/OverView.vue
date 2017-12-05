@@ -201,7 +201,7 @@ export default {
         modelId: this.moduleId
       }
       this.$http.post('/insertTag', addobj).then(response => {
-        if (response.data == 1) {
+        if (response.data === 1) {
           $('#addIntentModal').modal('hide')
 //          this.$options.methods.getModeltagById.bind(this)(this.moduleId)
           this.getModeltagById(this.moduleId)
@@ -219,7 +219,7 @@ export default {
       let result = confirm('确定删除这个意图标签？')
       if (result) {
         this.$http.post('/delTag', opt).then(response => {
-          if (response.data.result == 1) {
+          if (response.data.result === 1) {
             this.$options.methods.getModeltagById.bind(this)(this.moduleId)
           }
         }, response => {
@@ -240,7 +240,7 @@ export default {
         tagId: this.intentsNow.id
       }
       this.$http.post('/updateTag', opt).then(response => {
-        if (response.data.result == 1) {
+        if (response.data.result === 1) {
           $('#updataIntentModal').modal('hide')
           this.$options.methods.getModeltagById.bind(this)(this.moduleId)
         }
@@ -278,8 +278,8 @@ export default {
       this.$options.methods.getTagintentById.bind(this)(item)
     },
     addUtterance (event) {
-      if (event.keyCode == '13') {
-        if (!this.newUtterance || (this.newUtterance == undefined)) {
+      if (event.keyCode === '13') {
+        if (!this.newUtterance || (this.newUtterance === undefined)) {
           alert('请输入话语')
           return false
         }
@@ -288,7 +288,7 @@ export default {
           intentname: this.newUtterance
         }
         this.$http.post('/insertIntent', addobj).then(response => {
-          if (response.data == 1) {
+          if (response.data === 1) {
             addobj.newItem = true
             this.newUtterance = ''
             this.$options.methods.getTagintentById.bind(this)(this.intentsNow)
@@ -311,7 +311,7 @@ export default {
           idArr.push(this.utterancesList[i].id)
         }
       }
-      if (idArr.length == 0) {
+      if (idArr.length === 0) {
         alert('请选择要重新分配的话语')
         return false
       }

@@ -1,6 +1,7 @@
 /build/
 /config/
 /dist/
+/static/
 /*.js
 /test/unit/coverage/
-/*.min.js
+*.min.js

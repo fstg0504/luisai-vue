@@ -9,6 +9,7 @@
           <h2>测试应用程序</h2>
           <p>使用这个工具来测试您的应用程序的当前和发布版本，以检查您是否在正确的轨道上前进。<a >了解更多</a></p>
           <div class="train-list-con">
+            <p><button type="button" class="btn btn-primary" @click="trainModel()" :disabled="btnDisabled">测试当前模型</button></p>
             <div class="row">
               <ul class="nav-tabs">
                 <li class="active"><span class="">交互式测试</span></li>
@@ -21,11 +22,9 @@
               </div>
               <div class="form-group pull-right">
                 <label>
-                  <span class=".form-control-static">标签视图</span>
-                  <select class="">
-                    <option>111111</option>
-                    <option>111111</option>
-                    <option>111111</option>
+                  <span class="form-control-static">标签视图</span>
+                  <select class="form-control">
+                    <option v-for="item in tagViews">{{item}}</option>
                   </select>
                 </label>
               </div>
@@ -38,7 +37,7 @@
                 </div>
                 <div class="chat-items-wrapper">
                   <div v-for="(item,index) in chatList" class="chat-item-wrapper" :class="{'selected':index==0}" v-cloak>
-                    <span class="token-word" :id="item.id">{{item.quiz}}</span>
+                    <span class="token-word" :id="item.id" @click="resultsShowById(item)">{{item.sentence}}</span>
                   </div>
                 </div>
               </div>
@@ -76,7 +75,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
 import MainLayout from '@/components/MainLayout'
 
 export default {
@@ -84,17 +82,20 @@ export default {
   data () {
     return {
       appInfo: {},
+      modelId: null,
+      tagViews: ['测试1', '测试2', '测试2'],
       chatList: [],
       inputChat: '',
       resultsShow: false,
       resultsLoading: false,
-      results: {}
+      results: {},
+      btnDisabled: false
     }
   },
   created: function () {
     let appInfo = JSON.parse(sessionStorage.getItem('appInfo'))
     this.appInfo = appInfo
-    this.moduleId = appInfo.id
+    this.modelId = appInfo.id
   },
   mounted: function () {
   },
@@ -103,21 +104,47 @@ export default {
   },
   methods: {
     addChat () {
-      if (this.inputChat == '' || this.inputChat == undefined) {
+      if (this.inputChat === '' || this.inputChat === undefined) {
         return false
       }
       this.resultsLoading = true
       this.resultsShow = false
       let addobj = {
-        id: this.chatList.length + 1,
-        quiz: this.inputChat
+        modelId: this.modelId,
+        sentence: this.inputChat
       }
-      this.chatList.unshift(addobj)
       this.inputChat = ''
-      setTimeout(() => {
-        this.resultsLoading = false
-        this.resultsShow = true
-      }, 1000)
+      this.$http.post('/predictModel', addobj).then(response => {
+        if (response.data.result === '1') {
+          this.resultsLoading = false
+          this.resultsShow = true
+        } else {
+          this.resultsLoading = false
+          alert(response.data.result)
+        }
+      }, response => {
+        console.log('失败：' + response)
+      })
+      addobj.id = new Date().getTime()
+      this.chatList.unshift(addobj)
+    },
+    trainModel () {
+      const opt = {
+        modelId: this.modelId
+      }
+      this.$http.post('/trainModel', opt).then(response => {
+        console.log(response)
+        if (response.data.result === '1') {
+          this.btnDisabled = true
+        } else {
+          this.btnDisabled = false
+        }
+      }, response => {
+        console.log('失败：' + response)
+      })
+    },
+    resultsShowById (item) {
+
     }
   },
   watch: {

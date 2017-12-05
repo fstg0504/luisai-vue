@@ -7,13 +7,13 @@ import TrainTest from '@/components/TrainTest'
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
   base: '/ssm/', // 服务器的虚拟目录
   routes: [
     {
       path: '/',
       redirect: '/applications',
-      name: '/',
+      name: '模型列表',
       component: Applications
     },
     {
@@ -31,5 +31,6 @@ export default new Router({
       name: '培训测试',
       component: TrainTest
     },
+    { path: '*', redirect: '/' }
   ]
 })
