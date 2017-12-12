@@ -45,6 +45,7 @@ exports.cssLoaders = function (options) {
     if (options.extract) {
       return ExtractTextPlugin.extract({
         use: loaders,
+        publicPath: '../../', //解决css里面路径问题 不知道为什么加了好使
         fallback: 'vue-style-loader'
       })
     } else {

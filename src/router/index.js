@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Applications from '@/components/Applications'
-import OverView from '@/components/OverView'
+import Intents from '@/components/Intents'
 import TrainTest from '@/components/TrainTest'
+import Entities from '@/components/Entities'
 
 Vue.use(Router)
 
@@ -22,9 +23,14 @@ export default new Router({
       component: Applications
     },
     {
-      path: '/overview',
+      path: '/intents',
       name: '意图列表',
-      component: OverView
+      component: Intents
+    },
+    {
+      path: '/entities',
+      name: '实体列表',
+      component: Entities
     },
     {
       path: '/trainTest',

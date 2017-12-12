@@ -4,10 +4,9 @@
       <div class="col-lg-12">
         <h1 class="">我的应用</h1>
         <p>创建和管理您的luis应用程序。
-          <a>更多</a>
         </p>
         <div class="btn-group">
-          <button class="btn newbtn" data-toggle="modal" data-target="#addAPPModal">创建模型</button>
+          <el-button data-toggle="modal" data-target="#addAPPModal">创建模型</el-button>
         </div>
       </div>
     </div>
@@ -23,7 +22,7 @@
         <tbody>
         <tr v-cloak v-for="(item,index) in applist" :key="index">
           <td>
-            <router-link @click.native="setSessionStorage(item)" :class="{'active':item.active}" :to="{path:'/overview'}" tag="a">{{item.modelname}}</router-link>
+            <router-link @click.native="setSessionStorage(item)" :class="{'active':item.active}" :to="{path:'/intents'}" tag="a">{{item.modelname}}</router-link>
           </td>
           <td >{{ item.createtime }}</td>
           <td >{{ item.descrbe }}</td>
@@ -79,14 +78,12 @@ export default {
     }
   },
   created () {
-    // 方法1 apply或者call
-    //  方法2 this.$options.methods.findAllModel(this)
-    this.$options.methods.findAllModel.bind(this)()
+    this.findAllModel()
   },
   methods: {
     add () {
       if (!this.addmodelName) {
-        alert('应用名称不能为空')
+        this.$message({message: '应用名称不能为空', type: 'warning'})
         return false
       }
       let addobj = {
@@ -101,7 +98,7 @@ export default {
         this.$options.methods.findAllModel.bind(this)()
         $('#addAPPModal').modal('hide')
       }, response => {
-        console.log('失败：' + response)
+        this.$message.error(`错误信息：${response}`)
       })
     },
     findAllModel () {

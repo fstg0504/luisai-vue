@@ -7,65 +7,53 @@
       <div class="col-lg-10">
         <div class="right-con">
           <h2>测试应用程序</h2>
-          <p>使用这个工具来测试您的应用程序的当前和发布版本，以检查您是否在正确的轨道上前进。<a >了解更多</a></p>
+          <p>使用这个工具来测试您的应用程序的当前和发布版本，以检查您是否在正确的轨道上前进。</p>
           <div class="train-list-con">
-            <p><button type="button" class="btn btn-primary" @click="trainModel()" :disabled="btnDisabled">测试当前模型</button></p>
+            <p><button type="button" class="btn btn-primary" @click="trainModel()" :disabled="btnDisabled">{{btnDisabled == true?'测试中..':'测试当前模型'}}</button></p>
             <div class="row">
-              <ul class="nav-tabs">
-                <li class="active"><span class="">交互式测试</span></li>
-                <li class=""><span class="">批量测试（无效）</span></li>
-              </ul>
-            </div>
-            <div class="row filter-con clearfix">
-              <div class="form-group checkbox pull-left">
-                <label><input type="checkbox" class="form-control" disabled>使出版模式</label>
-              </div>
-              <div class="form-group pull-right">
-                <label>
-                  <span class="form-control-static">标签视图</span>
-                  <select class="form-control">
-                    <option v-for="item in tagViews">{{item}}</option>
-                  </select>
-                </label>
-              </div>
-            </div>
-            <div class="row clearfix">
-              <div class="train-txt-con train-txt-left pull-left">
-                <div class="from-group">
-                  <input v-model="inputChat" type="text" class="form-control">
-                  <i @click="addChat()" class="fa fa-arrow-right" aria-hidden="true"></i>
-                </div>
-                <div class="chat-items-wrapper">
-                  <div v-for="(item,index) in chatList" class="chat-item-wrapper" :class="{'selected':index==0}" v-cloak>
-                    <span class="token-word" :id="item.id" @click="resultsShowById(item)">{{item.sentence}}</span>
+              <el-tabs v-model="activeName">
+                <el-tab-pane label="交互式测试" name="first">
+                  <div class="row filter-con clearfix">
+                    <div class="form-group checkbox pull-left">
+                    </div>
+                    <div class="form-group pull-right">
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="train-txt-con train-txt-right pull-right">
-                <div class="results-wrapper" :class="{'active':resultsShow}">
-                  <div class="results-response-wrapper">
-                    <template v-if="resultsLoading">
-                      <div class="loading-con">
-                        <p class="loading-img"></p>
+                  <div class="row clearfix">
+                    <div class="train-txt-con train-txt-left pull-left">
+                      <div class="from-group">
+                        <input v-model="inputChat" type="text" class="form-control" :disabled="resultsLoading">
+                        <i @click="addChat()" class="fa fa-arrow-right" aria-hidden="true"></i>
                       </div>
-                    </template>
-                    <template v-if="resultsShow">
-                      <h4 class="">当前版本的结果</h4>
-                      <div class="main-intent">
-                        <h5 class="">得分最高的意图</h5>
-                        <h4><span class="intent-name">None </span><span >(0.73)</span></h4>
+                      <div class="chat-items-wrapper">
+                        <div v-for="(item,index) in chatList" class="chat-item-wrapper" :class="{'selected':index==0}" v-cloak>
+                          <span class="token-word" :id="item.id" @click="resultsShowById(item)">{{item.sentence}}</span>
+                        </div>
                       </div>
-                      <div class="">
-                        <h5 class="win-color-fg-secondary">其他的意图</h5>
-                        <ul class="other-intent-list">
-                          <li >询问火车票 (0)</li><li >寻找歌单 (0)</li>
-                        </ul>
+                    </div>
+                    <div class="train-txt-con train-txt-right pull-right">
+                      <div class="results-wrapper" :class="{'active':resultsShow}">
+                        <div class="results-response-wrapper">
+                          <template v-if="resultsLoading">
+                            <div class="loading-con">
+                              <p class="loading-img"></p>
+                            </div>
+                          </template>
+                          <template v-if="resultsShow">
+                            <h4 class="">当前版本的结果</h4>
+                            <div class="">
+                              <ul class="other-intent-list">
+                                <li v-for="item in resultsList">{{item.intentsName}}: ({{item.percent}})</li>
+                              </ul>
+                            </div>
+                            <hr class="solid-hr">
+                          </template>
+                        </div>
                       </div>
-                      <hr class="solid-hr">
-                    </template>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </el-tab-pane>
+              </el-tabs>
             </div>
           </div>
         </div>
@@ -89,13 +77,24 @@ export default {
       resultsShow: false,
       resultsLoading: false,
       results: {},
-      btnDisabled: false
+      resultsList: [],
+      btnDisabled: false,
+      activeName: 'first'
     }
   },
   created: function () {
     let appInfo = JSON.parse(sessionStorage.getItem('appInfo'))
+    console.log(appInfo)
     this.appInfo = appInfo
     this.modelId = appInfo.id
+    if (appInfo) {
+      this.appInfo = appInfo
+      this.modelId = appInfo.id
+    } else {
+      this.$router.push({
+        path: '/'
+      })
+    }
   },
   mounted: function () {
   },
@@ -115,12 +114,24 @@ export default {
       }
       this.inputChat = ''
       this.$http.post('/predictModel', addobj).then(response => {
-        if (response.data.result === '1') {
+        const data = response.data
+        if (data.intent.length > 0) {
           this.resultsLoading = false
           this.resultsShow = true
+          let resultsList = []
+          for (const i in data.intent) {
+            const node = data.intent[i]
+            for (const key in node) {
+              resultsList.push({
+                intentsName: key,
+                percent: node[key]
+              })
+            }
+          }
+          this.resultsList = resultsList
         } else {
           this.resultsLoading = false
-          alert(response.data.result)
+          console.log(response.data.result)
         }
       }, response => {
         console.log('失败：' + response)
@@ -129,22 +140,21 @@ export default {
       this.chatList.unshift(addobj)
     },
     trainModel () {
+      this.btnDisabled = true
       const opt = {
         modelId: this.modelId
       }
       this.$http.post('/trainModel', opt).then(response => {
-        console.log(response)
-        if (response.data.result === '1') {
-          this.btnDisabled = true
+        this.btnDisabled = false
+        if (response.data.result === 1) {
         } else {
-          this.btnDisabled = false
         }
       }, response => {
-        console.log('失败：' + response)
+        this.$message.error(`培训模型失败：${response}`)
+        this.btnDisabled = false
       })
     },
     resultsShowById (item) {
-
     }
   },
   watch: {
@@ -274,7 +284,7 @@ export default {
               .loading-img{
                 width: 32px;height: 32px;
                 margin: 50px auto 0;
-                background:url("/src/assets/images/loading_pre.gif") no-repeat center;
+                background:url("../assets/images/loading_pre.gif") no-repeat center;
                 background-size: 100%;
               }
             }

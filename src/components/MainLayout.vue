@@ -31,7 +31,7 @@ export default {
       version: '0.01',
       pathList: [
         {
-          url: '/overview',
+          url: '/intents',
           text: '意图',
           active: false
         },
@@ -49,21 +49,25 @@ export default {
     }
   },
   created () {
-    let pathname = location.pathname
-    for (let i in this.pathList) {
-      let node = this.pathList[i]
-      if (pathname.indexOf(node.url) > -1) {
-        node.active = true
-      } else {
-        node.active = false
-      }
-    }
+    this.initPath()
   },
   methods: {
     handleLink (item) {
-      let pathname = location.pathname
-      if (pathname.indexOf('/overview')) {
+      let routepath = this.$route.path
+      if (routepath.indexOf('/intents') > -1) {
         this.$emit('handleLink')
+      }
+      this.initPath()
+    },
+    initPath () {
+      let routepath = this.$route.path
+      for (let i in this.pathList) {
+        let node = this.pathList[i]
+        if (routepath.indexOf(node.url) > -1) {
+          node.active = true
+        } else {
+          node.active = false
+        }
       }
     }
   }
