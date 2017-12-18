@@ -21,7 +21,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: '0.0.0.0', // can be overwritten by process.env.HOST  // 修改本地可以用ip打开
+    host: '0.0.0.0', // can be overwritten by process.env.HOST  // 淇敼鏈湴鍙互鐢╥p鎵撳紑
     port: 8881, // can be overwritten by process.env.HOST, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
